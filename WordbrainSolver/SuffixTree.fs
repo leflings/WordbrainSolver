@@ -14,19 +14,6 @@ let rec countNodes = function
     | Node (_,ts)
     | LongNode (_,ts) -> 1 + (ts |> List.sumBy (countNodes))
 
-let buildTree words =
-    let rec recurse ws =
-        let chars,suffixes = ws |> List.groupBy (String.nth 0) |> List.unzip
-        let suffixes' = suffixes |> List.map (List.map (String.skipChars 1) >> List.filter ((<>) ""))
-        (chars, suffixes')
-        ||> List.map2 (fun ch words ->
-            match words with
-            | [] -> Leaf ch
-            | [x] -> LongLeaf (string ch + x)
-            | _ -> Node(ch, recurse words)
-            )
-    Root (recurse words)
-
 let shrinkTree tree =
     let rec recurse s = function
         | Root (ts) -> ts |> List.map (recurse s) |> Root
@@ -53,6 +40,22 @@ let shrinkTree tree =
                 let newStr = s |> List.rev |> String.fromCharList
                 LongLeaf(newStr + str)
     recurse [] tree
+
+let buildTree words =
+    let rec recurse ws =
+        let chars,suffixes = ws |> List.groupBy (String.nth 0) |> List.unzip
+        let suffixes' = suffixes |> List.map (List.map (String.skipChars 1) >> List.filter ((<>) ""))
+        (chars, suffixes')
+        ||> List.map2 (fun ch words ->
+            match words with
+            | [] -> Leaf ch
+            | [x] -> LongLeaf (string ch + x)
+            | _ -> Node(ch, recurse words)
+            )
+    Root (recurse words)
+
+let buildAndShrink = buildTree >> shrinkTree
+
 
 /// Removes common prefix, if any, from both lists
 let rec eatEquals xs ys =

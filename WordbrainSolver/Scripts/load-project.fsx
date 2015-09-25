@@ -5,4 +5,7 @@
       @"..\StringHelpers.fs"
       @"..\SuffixTree.fs"
       @"..\Words.fs"
+      @"..\Directions.fs"
+      @"..\Board.fs"
+      @"..\Logic.fs"
       @"..\Program.fs"

@@ -12,9 +12,8 @@ let words =
     |> List.map (String.toLower)
     |> List.distinct
 
-let t = words |> buildTree
-t |> shrinkTree
-t |> shrinkTree |> treeFrom "pri"
+let t = words |> buildTree |> shrinkTree
+t |> treeFrom "pri"
 |> Option.map collectBranches
 
 "con" |> isInTree t
