@@ -1,4 +1,5 @@
 ﻿#load "Scripts/load-project.fsx"
+#time "on";;
 
 open SuffixTree
 
@@ -12,12 +13,17 @@ let words =
     |> List.distinct
 
 let t = words |> buildTree
-"containing" |> isInTree t
+t |> shrinkTree
+t |> shrinkTree |> treeFrom "pri"
+|> Option.map collectBranches
+
+"con" |> isInTree t
 
 let bigT = Words.englishSuffix
+let bs = bigT |> shrinkTree
 
-bigT
-|> treeFrom "pig"
+bs
+|> treeFrom "wack"
 |> Option.map collectBranches
 
 
