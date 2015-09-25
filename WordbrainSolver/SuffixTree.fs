@@ -7,6 +7,13 @@ type SuffixTree =
     | LongLeaf of string
     | Leaf of char
 
+let rec countNodes = function
+    | Root (ts) -> ts |> List.sumBy (countNodes)
+    | Leaf _
+    | LongLeaf _ -> 1
+    | Node (_,ts)
+    | LongNode (_,ts) -> 1 + (ts |> List.sumBy (countNodes))
+
 let buildTree words =
     let rec recurse ws =
         let chars,suffixes = ws |> List.groupBy (String.nth 0) |> List.unzip
