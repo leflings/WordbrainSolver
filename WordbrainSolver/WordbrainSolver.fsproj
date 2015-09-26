@@ -58,8 +58,9 @@
     <Compile Include="StringHelpers.fs" />
     <Compile Include="SuffixTree.fs" />
     <Compile Include="Words.fs" />
-    <Compile Include="Directions.fs" />
+    <Compile Include="Types.fs" />
     <Compile Include="Board.fs" />
+    <Compile Include="BoardParser.fs" />
     <Compile Include="Logic.fs" />
     <None Include="App.config" />
     <None Include="Scripts\load-references.fsx" />

@@ -1,19 +1,16 @@
 ﻿module Board
 
+open Types
 open Directions
-
-type Direction = int
-type Board = char [,]
-type Position = int * int
-type State = Board * Position
-type Move = Position * Direction -> Position
-type IsValidMove = Position * Direction -> bool
 
 let tuple a b = (a,b)
 let tuple3 a b c = (a,b,c)
 let tuple4 a b c d = (a,b,c,d)
 
-let init c n = Array2D.init n n (sprintf "%i,%i")
+let init c n = Array2D.create n n c
+
+let get (board : 'a [,]) (x,y) = board.[x,y]
+let set (board : 'a [,]) (x,y) e = board.[x,y] <- e
 
 let move pos dir =
     let x,y = pos

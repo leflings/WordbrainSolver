@@ -2,10 +2,10 @@
 
 let englishWords =
     TNX.NamesAndPassword.WorldDictionary.GetWordsForCulture("en")
-    |> Seq.map String.toLower
+    |> Seq.map StringHelpers.String.toLower
     |> Set.ofSeq
     |> Set.toList
 
 let englishSuffix =
     englishWords
-    |> SuffixTree.buildTree
+    |> SuffixTree.buildAndShrink

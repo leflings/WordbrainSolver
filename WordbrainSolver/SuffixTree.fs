@@ -1,5 +1,7 @@
 ﻿module SuffixTree
 
+open StringHelpers
+
 type SuffixTree =
     | Root of SuffixTree list
     | LongNode of string * SuffixTree List
@@ -68,7 +70,7 @@ let rec eatEquals xs ys =
             then eatEquals xs' ys'
             else xs, ys
 
-let isInTree tree str =
+let isInTree str tree =
     let rec search chars tree =
         match chars with
         | [] -> true
@@ -89,6 +91,22 @@ let isInTree tree str =
                 | true, false -> ts |> List.exists (search chars')
     let chars = str |> String.toLower |> fun x -> x.ToCharArray() |> List.ofArray
     search chars tree
+
+let rec treeFromChar ch tree =
+    match tree with
+    | Root (ts)  -> ts |> List.tryPick (treeFromChar ch)
+    | Leaf _ -> None
+    | LongLeaf (str) ->
+        if str.Chars 0 = ch
+            then str.Substring(1) |> LongLeaf |> Some
+            else None
+    | LongNode (str, ts) ->
+        match (str.Chars 0) = ch, str |> String.skipChars 1 with
+        | false, _ -> None
+        | true, "" -> Some (Root ts)
+        | true, str' -> Some (LongNode(str', ts))
+    | Node (c, ts) -> if c = ch then Some (Root ts) else None
+
 
 let treeFrom str tree =
     let chars = str |> String.toLower |> String.toCharList
