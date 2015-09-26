@@ -95,11 +95,13 @@ let isInTree str tree =
 let rec treeFromChar ch tree =
     match tree with
     | Root (ts)  -> ts |> List.tryPick (treeFromChar ch)
-    | Leaf _ -> None
+    | Leaf c ->
+        if c = ch then Some (Root []) else None
     | LongLeaf (str) ->
-        if str.Chars 0 = ch
-            then str.Substring(1) |> LongLeaf |> Some
-            else None
+        match eatEquals [ch] (str |> String.toCharList) with
+        | [], [] -> Some (Root [])
+        | [], xs -> xs |> String.fromCharList |> LongLeaf |> Some
+        | _ -> None
     | LongNode (str, ts) ->
         match (str.Chars 0) = ch, str |> String.skipChars 1 with
         | false, _ -> None
@@ -116,10 +118,10 @@ let treeFrom str tree =
         | c::cs ->
             match t with
             | Root (ts) -> ts |> List.tryPick (find s)
-            | Leaf (ch) -> None
+            | Leaf (ch) -> if c = ch && List.isEmpty cs then Some (Root []) else None
             | LongLeaf (str) ->
                 match eatEquals s (str |> String.toCharList) with
-                | [], [] -> None
+                | [], [] -> Some (Root [])
                 | [], xs -> xs |> String.fromCharList |> LongLeaf |> Some
                 | _ -> None
             | LongNode (str, ts) ->
