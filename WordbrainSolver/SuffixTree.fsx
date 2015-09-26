@@ -3,6 +3,7 @@
 
 open SuffixTree
 open StringHelpers
+open Types
 
 let boardStr = """abc
 def
@@ -22,9 +23,19 @@ tree
 
 tree |> treeFrom "ab"
 
-let initialState = (board, [0,1;0,0], tree |> treeFrom "ab" |> Option.get)
-
+let initialState = (board, [0,0], tree |> treeFrom "a" |> Option.get)
 Logic.availableMoves initialState
+
+let rec walkFrom (state : State) : State list =
+    let moves = Logic.availableMoves state
+    let move = Logic.move state >> walkFrom
+    List.collect (move) moves
+
+let x = 
+    initialState
+    |> walkFrom
+
+    
 
 
 

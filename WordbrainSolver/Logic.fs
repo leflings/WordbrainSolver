@@ -24,11 +24,10 @@ let availableMoves state =
 
 let move (state : State) dir : State =
     let (board, taken, tree) = state
-    let pos = List.head taken
-    let pos' = Board.move pos dir
+    let pos = Board.move (List.head taken) dir
     let tree' =
         tree
-        |> SuffixTree.treeFrom (Board.get board pos' |> string)
+        |> SuffixTree.treeFromChar (Board.get board pos)
         |> Option.get
-    let taken' = pos' :: taken
+    let taken' = pos :: taken
     (board, taken', tree')
