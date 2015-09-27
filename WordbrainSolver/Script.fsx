@@ -5,10 +5,6 @@ open Types
 open Tree
 open StringHelpers
 
-let boardStr = """abc
-def
-ghi"""
-
 let boardStr = """
 etrkk
 ksiei
@@ -17,18 +13,10 @@ rreuu
 vkadm
 """
 
-
 let board = BoardParser.fromString boardStr
 let tree = ["abe"; "bade"; "abc"; "abcf"; "abcd"; "qaaa"; "qaab"; "qaba"; "qabb"; "qbaa"; "qbba"; "qabc"] |> Tree.buildTree
 
 let bigTree = Words.englishWords |> Tree.buildTree
-
-tree 
-|> treeFromChar 'a'
-|> Option.bind (treeFromChar 'b')
-|> Option.bind (treeFromChar 'e')
-|> Option.bind (treeFromChar 'a')
-|> Option.bind (treeFromChar 'a')
 
 let movesFrom (state : State) =
     let board, taken, _ = state
@@ -77,64 +65,41 @@ let allBranches ((board, taken, tree) as state : State) =
             ]
     |> List.choose id
     |> List.collect (branchesFrom)
+
+Array.create 4 ' '
+testColumn |> shrinkColumn
     
 
-bigTree
-|> treeCollectedFrom "hie"
+    
+let testString = """
+sexy
+moth
+heae
+asdr"""
+
+let testBoard = BoardParser.fromString testString
         
-let initState = (board, [], bigTree)
-initState
+let testState = (testBoard, [], bigTree)
+
+let firstTake = testState |> allBranches |> List.distinct |> List.head
+
+let newBoard = copyBoardWithout testBoard firstTake
+newBoard |> trickleDownColumns
+
+newBoard
+
+testBoard
+
+testBoard.[*,0] <- [|'1';'2';'3';'4'|]
+
+
+testBoard
+
+testState
 |> allBranches
-|> List.map (List.map (Board.get board))
-|> List.map (List.rev >> String.fromCharList)
 |> List.distinct
+|> List.map (List.map (Board.get testBoard))
+|> List.map (List.rev >> String.fromCharList)
 
 
-let initialState = (board, [0,1;0,0], tree |> treeFrom "ab" |> Option.get)
-
-let a = 
-initialState
-|> branchesFrom
-
-initialState
-|> Option.bind (move Directions.S)
-
-let oneStep state =
-    state |> movesFrom |> List.choose (fun m -> move m state)
-
-initialState
-|> oneStep
-|> List.head
-|> oneStep
-|> List.map oneStep
-
-|> List.map movesFrom
-
-Logic.availableMoves initialState
-
-
-
-open SuffixTree
-
-let stringOfWords = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
-
-let words =
-    stringOfWords
-    |> String.splitWith " "
-    |> List.ofArray
-    |> List.map (String.toLower)
-    |> List.distinct
-let t = words |> buildAndShrink
-t |> treeFrom "pri"
-|> Option.map collectBranches
-
-let big = Words.englishSuffix
-
-big
-|> treeFrom "hackb"
-|> Option.map collectBranches
-
-
-t
-|> treeFrom "pa"
 
