@@ -3,7 +3,7 @@
 type Direction = int
 type Board = char [,]
 type Position = int * int
-type State = Board * Position list * SuffixTree.SuffixTree
+type State = Board * Position list * Tree.Tree
 
 module Directions =
 
@@ -20,4 +20,8 @@ module Directions =
         let x = (m / 3 - 1) * -1
         let y = m % 3 - 1
         x,y
+    let move dir pos =
+        let x,y = pos
+        let x',y' = vectorFromMove dir
+        (x+x', y+y')
     let moves = [SW; S; SE; W; E; NW; N ; NE]

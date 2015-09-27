@@ -3,6 +3,7 @@
 #load @"load-references.fsx"
 #load @"..\AssemblyInfo.fs"
       @"..\StringHelpers.fs"
+      @"..\Tree.fs"
       @"..\SuffixTree.fs"
       @"..\Words.fs"
       @"..\Types.fs"

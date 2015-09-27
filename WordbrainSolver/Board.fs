@@ -12,20 +12,34 @@ let init c n = Array2D.create n n c
 let get (board : 'a [,]) (x,y) = board.[x,y]
 let set (board : 'a [,]) (x,y) e = board.[x,y] <- e
 
-let move pos dir =
-    let x,y = pos
-    let x',y' = vectorFromMove dir
-    (x+x', y+y')
-
 let isValidPosition board (posx,posy) =
     let lx, ly = Array2D.length1 board, Array2D.length2 board
     not (posy < 0 || posx < 0 || posy >= ly || posx >= lx)
 
-let canMove board pos dir = move pos dir |> isValidPosition board
 let swap b p1 p2 =
     let x = p1 ||> Array2D.get b
     (Array2D.set b <|| p1) <| (Array2D.get b <|| p2)
     (Array2D.set b <|| p2) x
     b
 
-let validMoves board pos = moves |> List.filter (move pos >> isValidPosition board) 
+
+
+let private trickleDownColumns board =
+    let shrinkColumn col =
+        let n = Array.length col
+        let validChars =  col |> Array.filter ((<>) ' ')
+        let count = Array.length validChars
+        let startIndex = n - count
+        let newArray = Array.create n ' '
+        Array.blit validChars 0 newArray startIndex count
+        newArray
+    let n = Array2D.length2 board
+    for i in 0 .. n - 1 do
+        let col = board.[*,i]
+        board.[*,i] <- col |> shrinkColumn
+    board
+
+let copyBoardWithout board taken =
+    let newBoard = Array2D.copy board
+    taken |> List.iter (fun x -> set newBoard x ' ')
+    newBoard |> trickleDownColumns
