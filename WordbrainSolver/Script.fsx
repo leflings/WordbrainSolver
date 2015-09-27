@@ -5,25 +5,10 @@ open Types
 open Tree
 open StringHelpers
 
-let boardStr = """
-etrkk
-ksiei
-utbsk
-rreuu
-vkadm
-"""
-
-let board = BoardParser.fromString boardStr
-let tree = ["abe"; "bade"; "abc"; "abcf"; "abcd"; "qaaa"; "qaab"; "qaba"; "qabb"; "qbaa"; "qbba"; "qabc"] |> Tree.buildTree
-
-let bigTree = Words.englishWords |> Tree.buildTree
-
-let movesFrom (state : State) =
-    let board, taken, _ = state
-    let pos = List.head taken
+let movesFrom ((board, taken, _) : State) =
     Directions.moves
     |> List.filter (fun m ->
-            let newPos = pos |> Directions.move m
+            let newPos = taken |> List.head |> Directions.move m
             Board.isValidPosition board newPos
             && not (List.exists ((=) newPos) taken))
 
@@ -66,40 +51,45 @@ let allBranches ((board, taken, tree) as state : State) =
     |> List.choose id
     |> List.collect (branchesFrom)
 
-Array.create 4 ' '
-testColumn |> shrinkColumn
+let branchToStr board = List.map (Board.get board) >> List.rev >> String.fromCharList
+
+let boardStr = """
+etrkk
+ksiei
+utbsk
+rreuu
+vkadm
+"""
+boardStr |> BoardParser.boardFrom
+
+let board = BoardParser.boardFrom boardStr
+let tree = ["abe"; "bade"; "abc"; "abcf"; "abcd"; "qaaa"; "qaab"; "qaba"; "qabb"; "qbaa"; "qbba"; "qabc"] |> Tree.buildTree
+
+let bigTree = Words.englishWords |> Tree.buildTree
+
+let charArray = Array.chunkBySize 3 ("abcdefghi".ToCharArray())
+Array2D.init 3 3 (fun x y -> charArray.[x].[y])
     
 
-    
 let testString = """
-sexy
-moth
-heae
-asdr"""
+sex
+mot
+asd"""
 
-let testBoard = BoardParser.fromString testString
+let testBoard = BoardParser.boardFrom testString
         
 let testState = (testBoard, [], bigTree)
 
 let firstTake = testState |> allBranches |> List.distinct |> List.head
 
-let newBoard = copyBoardWithout testBoard firstTake
-newBoard |> trickleDownColumns
+let newBoard = Board.copyBoardWithout testBoard firstTake
 
-newBoard
-
-testBoard
-
-testBoard.[*,0] <- [|'1';'2';'3';'4'|]
-
-
-testBoard
+let secondTake = (newBoard, [], bigTree) |> allBranches |> List.distinct |> List.map (branchToStr board)
 
 testState
 |> allBranches
 |> List.distinct
-|> List.map (List.map (Board.get testBoard))
-|> List.map (List.rev >> String.fromCharList)
+|> List.map (branchToStr testBoard)
 
 
 
