@@ -11,8 +11,8 @@ let private emptyChar = ' '
 
 let init c n = Array2D.create n n c
 
-let get (board : 'a [,]) (x,y) = board.[x,y]
-let set (board : 'a [,]) (x,y) e = board.[x,y] <- e
+let get (board : 'a [,]) ((x,y) : Position) = board.[x,y]
+let set (board : 'a [,]) ((x,y) : Position) e = board.[x,y] <- e
 
 let flatten (board : 'a [,]) = board |> Seq.cast<'a>
 
