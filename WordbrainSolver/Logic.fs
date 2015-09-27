@@ -6,12 +6,12 @@ open Directions
 let canMove (state : State) dir =
     let board, taken, tree = state
     let pos = List.head taken
-    let newPos = Board.move pos dir
+    let newPos = pos |> move dir
     if not (Board.isValidPosition board newPos)
     then false
     else
         let isFree = List.forall ((<>) newPos) taken
-        let isInTree = tree |> SuffixTree.treeFromChar (Board.get board newPos) |> Option.isSome
+        let isInTree = tree |> Tree.treeFromChar (Board.get board newPos) |> Option.isSome
         isFree && isInTree
 
 let availableMoves state =
@@ -25,10 +25,10 @@ let availableMoves state =
 let move (state : State) dir : State =
     let (board, taken, tree) = state
     let pos = List.head taken
-    let pos' = Board.move pos dir
+    let pos' = pos |> move dir
     let tree' =
         tree
-        |> SuffixTree.treeFrom (Board.get board pos' |> string)
+        |> Tree.treeFrom (Board.get board pos' |> string)
         |> Option.get
     let taken' = pos' :: taken
     (board, taken', tree')
