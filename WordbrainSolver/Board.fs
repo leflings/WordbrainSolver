@@ -11,16 +11,19 @@ let private emptyChar = ' '
 
 let init c n = Array2D.create n n c
 
-let get (board : 'a [,]) ((x,y) : Position) = board.[x,y]
-let set (board : 'a [,]) ((x,y) : Position) e = board.[x,y] <- e
+//let get (board : 'a [,]) ((x,y) : Position) = board.[x,y]
+//let set (board : 'a [,]) ((x,y) : Position) e = board.[x,y] <- e
+
+let get (Board(b)) (Position(x,y)) = b.[x,y]
+let set (Board(b)) (Position(x,y)) e = b.[x,y] <- e
 
 let flatten (board : 'a [,]) = board |> Seq.cast<'a>
 
-let isEmpty board = board |> flatten |> Seq.exists ((<>) emptyChar) |> not
+let isEmpty (Board(board)) = board |> flatten |> Seq.exists ((<>) emptyChar) |> not
 
-let isValidPosition board (posx,posy) =
+let isValidPosition (Board(board)) (Position(x,y)) =
     let lx, ly = Array2D.length1 board, Array2D.length2 board
-    not (posy < 0 || posx < 0 || posy >= ly || posx >= lx)
+    not (y < 0 || x < 0 || y >= ly || x >= lx)
 
 let swap b p1 p2 =
     let x = p1 ||> Array2D.get b
@@ -28,7 +31,7 @@ let swap b p1 p2 =
     (Array2D.set b <|| p2) x
     b
 
-let private trickleDownColumns board =
+let private trickleDownColumns (Board(board)) =
     let shrinkColumn col =
         let n = Array.length col
         let validChars =  col |> Array.filter ((<>) ' ')
@@ -41,9 +44,9 @@ let private trickleDownColumns board =
     for i in 0 .. n - 1 do
         let col = board.[*,i]
         board.[*,i] <- col |> shrinkColumn
-    board
+    Board(board)
 
-let copyBoardWithout board taken =
-    let newBoard = Array2D.copy board
+let copyBoardWithout (Branch(taken)) (Board(b)) =
+    let newBoard = Array2D.copy b |> Board
     taken |> List.iter (fun x -> set newBoard x ' ')
     newBoard |> trickleDownColumns

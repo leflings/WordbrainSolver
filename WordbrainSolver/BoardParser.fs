@@ -18,3 +18,4 @@ let boardFrom =
     >> String.toCharArray
     >> Array.filter (System.Char.IsLetter)
     >> to2D
+    >> Types.Board
